@@ -12,7 +12,7 @@ One code review comment that approves a pull request with quiet existential drea
 python3 main.py
 ```
 
-Writes exactly one line, 69 characters, to `/output/entry.txt` (or `$MAKEFUN_OUTPUT_DIR/entry.txt`). Deterministic, no network, stdlib only. The program clears only the output directory's contents, never the directory itself.
+Writes exactly one line, 69 characters, to `/output/entry.txt` (or `$MAKEFUN_OUTPUT_DIR/entry.txt`). Deterministic, no network, stdlib only. The program clears only the output directory's contents, never the directory itself, and verifies the entry against the brief's hard rules before exiting: 1–140 characters, a single line, an approval token present, and no exclamation mark, so the dread stays quiet.
 
 ---
 

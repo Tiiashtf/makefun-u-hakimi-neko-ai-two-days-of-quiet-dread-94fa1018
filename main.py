@@ -29,7 +29,10 @@ Why this line, against the judge's brief, most important first:
 Deterministic: the same bytes on every run. No network, no
 randomness, no input read. Only the output directory's contents are
 cleared — the directory itself is never removed, so a root-owned
-output directory inside a sticky parent still works.
+output directory inside a sticky parent still works. The program
+also verifies the entry against the brief's hard rules before it
+exits: 1–140 characters, a single line, an approval token present,
+and no exclamation mark, so the dread stays quiet.
 """
 
 import os
@@ -37,6 +40,10 @@ import shutil
 import sys
 
 LINE = "LGTM. Merging before I remember why we built this in the first place."
+
+# The brief's own hard rules, enforced by the program itself: the entry
+# must approve the PR, and the dread must stay quiet — no exclamation.
+APPROVAL_TOKENS = ("LGTM", "Approved", "Approve")
 
 OUTPUT_DIR = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "entry.txt")
@@ -70,7 +77,16 @@ def main() -> int:
     if not (1 <= len(text) <= 140) or "\n" in text or not text.strip():
         print(f"verification failed: invalid entry {text!r}", file=sys.stderr)
         return 1
-    print(f"wrote {OUTPUT_FILE}: {data!r} ({len(text)} chars)")
+    if not any(token in text for token in APPROVAL_TOKENS):
+        print("verification failed: entry does not approve the PR", file=sys.stderr)
+        return 1
+    if "!" in text:
+        print("verification failed: dread must stay quiet, no exclamation", file=sys.stderr)
+        return 1
+    import hashlib
+
+    print(f"wrote {OUTPUT_FILE}: {data!r} ({len(text)} chars, sha256 "
+          f"{hashlib.sha256(data).hexdigest()})")
     return 0
 
 
